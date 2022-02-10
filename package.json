@@ -5,7 +5,8 @@
 	"typings": "dist/index.d.ts",
 	"files": [
 		"dist",
-		"src"
+		"src",
+		"dist/types"
 	],
 	"engines": {
 		"node": ">=12"

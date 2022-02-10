@@ -1,5 +1,7 @@
 import * as distributions from './lib/distributions';
 import * as utils from './utils';
+import * as T from './public-types';
+
 const betaDist = require('@stdlib/stats/base/dists/beta');
 const Cauchy = require('@stdlib/stats/base/dists/cauchy').Cauchy;
 const normalDist = require('@stdlib/stats/base/dists/normal');
@@ -9,13 +11,13 @@ const { createBeta } = distributions;
 const { isEmpty, isBetaList, mean } = utils;
 
 // Format the patient to do anything that is needed
-export const formatPatient = (patient: Patient): FormattedPatient => {
-	return (createSymptomProgression(patient) as unknown) as FormattedPatient;
+export const formatPatient = (patient: T.Patient): T.FormattedPatient => {
+	return (createSymptomProgression(patient) as unknown) as T.FormattedPatient;
 };
 
 export const createSymptomProgression = (
-	patient: Patient
-): Partial<FormattedPatient> => {
+	patient: T.Patient
+): Partial<T.FormattedPatient> => {
 	// 1. Sort symptoms by duration (from longest to shortest)
 	const sortedSymptoms = patient.symptoms.sort(
 		(a, b) => b.duration - a.duration
@@ -28,17 +30,17 @@ export const createSymptomProgression = (
 		}
 		const timeToOnset = acc[acc.length - 1].duration - curr.duration;
 		return [...acc, { ...curr, timeToOnset }];
-	}, [] as FormattedPatientSymptom[]);
+	}, [] as T.FormattedPatientSymptom[]);
 
 	return { ...patient, symptoms: formattedSymptoms };
 };
 
 export function createPatient(
-	sex: Sex,
+	sex: T.Sex,
 	age: number,
-	symptoms: PatientSymptom[],
+	symptoms: T.PatientSymptom[],
 	signs: any[]
-): Patient {
+): T.Patient {
 	return {
 		age,
 		sex,
@@ -49,8 +51,8 @@ export function createPatient(
 
 // for each beta random variable, create a distribution and take the mean of it and multiply the resulting "p" of each one of them.
 // TODO: Figure out the penalty variables
-export const getBetaListMatch = (rule: BetaCombinationRule = 'and') => (
-	modelSymptoms: Beta[]
+export const getBetaListMatch = (rule: T.BetaCombinationRule = 'and') => (
+	modelSymptoms: T.Beta[]
 ) => (patientSymptoms: string[]) => {
 	// P(A and B) = P(A) x P(B | A) is probably a better approach here because the events are not independent
 	function getBetaP(alpha: number, beta: number, isPresent: boolean): number {
@@ -93,7 +95,7 @@ export const getBetaListMatch = (rule: BetaCombinationRule = 'and') => (
 	}
 };
 
-export const getCategoricalMatch = (variable: Categorical) => (
+export const getCategoricalMatch = (variable: T.Categorical) => (
 	patientPresentation: string
 ) => {
 	const pidx = variable.ns.indexOf(patientPresentation);
@@ -103,8 +105,8 @@ export const getCategoricalMatch = (variable: Categorical) => (
 // Interpreter: model => patient => matchPercentage
 type PatientMatch = number; //Omit<Beta, '_' | 'name'>;
 type InterpretFunction = (
-	model: ConditionModel
-) => (patient: FormattedPatient) => PatientMatch;
+	model: T.ConditionModel
+) => (patient: T.FormattedPatient) => PatientMatch;
 
 // TODO: Add support for symptoms that are not expected to be presenting yet based on symptom presentation
 export const interpret: InterpretFunction = model => patient => {
@@ -151,7 +153,7 @@ export const interpret: InterpretFunction = model => patient => {
 			) {
 				// Simple list of betas
 				// Should this be an "and" by default??
-				return getBetaListMatch('or')(modelSymptoms.nature)(
+				return getBetaListMatch('or')(modelSymptoms.nature as T.Beta[])(
 					psymptom.nature
 				);
 			}
@@ -224,3 +226,5 @@ function combineBetas(name = 'beta', betas: Array<Beta>): Beta {
 // TODO: Create the time to onset right here
 // TODO: Consider both present and absent symptoms
 // TODO: Think about running each model multiple times while sampling from each of the distributions to get some error bounds
+
+export * from './public-types';

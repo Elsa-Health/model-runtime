@@ -1,4 +1,6 @@
-export function createBeta(name: string, alpha: number, beta: number): Beta {
+import * as T from '../public-types';
+
+export function createBeta(name: string, alpha: number, beta: number): T.Beta {
 	if (alpha <= 0 || beta <= 0) {
 		throw new Error(
 			`Invalid beta distribution parameters: ${alpha}/${beta}`
@@ -12,7 +14,7 @@ export function createBeta(name: string, alpha: number, beta: number): Beta {
 	};
 }
 
-export function createNormal(name: string, mean: number, sd: number): Normal {
+export function createNormal(name: string, mean: number, sd: number): T.Normal {
 	if (sd <= 0) {
 		throw new Error(`Invalid normal distribution variance: ${sd}`);
 	}
@@ -29,7 +31,7 @@ export function createWeibull(
 	threshold: number,
 	shape: number,
 	scale: number
-): Weibull {
+): T.Weibull {
 	if (shape <= 0 || scale <= 0) {
 		throw new Error(
 			`Invalid weibull distribution parameters: ${shape}/${scale}`
@@ -50,7 +52,7 @@ export function createChange<T>(
 	to: T,
 	duration: number,
 	category: 'color' | 'shape' | 'size' | string
-): Change<T> {
+): T.Change<T> {
 	if (duration <= 0) {
 		throw new Error(`Invalid change distribution duration: ${duration}`);
 	}
@@ -68,7 +70,7 @@ export function createCategorical(
 	name: string,
 	ns: string[],
 	ps: number[]
-): Categorical {
+): T.Categorical {
 	if (ps.length !== ns.length) {
 		throw new Error(
 			`Invalid categorical distribution parameters: ${ps}/${ns}`
@@ -82,7 +84,7 @@ export function createCategorical(
 	};
 }
 
-export function createOnset(onset: Onset): Onset {
+export function createOnset(onset: T.Onset): T.Onset {
 	return onset;
 }
 
@@ -90,7 +92,7 @@ export function createCauchy(
 	name: string,
 	location: number,
 	scale: number
-): Cauchy {
+): T.Cauchy {
 	if (scale <= 0) {
 		throw new Error(`Invalid cauchy distribution scale: ${scale}`);
 	}

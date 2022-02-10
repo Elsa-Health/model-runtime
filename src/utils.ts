@@ -1,5 +1,5 @@
 // import _, { random } from 'lodash';
-
+import * as T from './public-types';
 import {
 	createBeta,
 	createCategorical,
@@ -16,7 +16,7 @@ function upperFirst(str: string): string {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export const randomSymptom = (name: string): Symptom => {
+export const randomSymptom = (name: string): T.Symptom => {
 	const rand = Math.random();
 	const duration = createNormal(
 		'duration',
@@ -69,8 +69,8 @@ export const friendlySymptomName = (name: string) => {
 };
 
 export const toggleCondition = (
-	conditions: Condition[],
-	condition: Condition
+	conditions: T.Condition[],
+	condition: T.Condition
 ) => {
 	const condIdx = conditions.findIndex(c => c.name === condition.name);
 	if (condIdx > -1) {

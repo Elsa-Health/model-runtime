@@ -1,6 +1,6 @@
-type Sex = 'male' | 'female';
+export type Sex = 'male' | 'female';
 
-type Beta = {
+export type Beta = {
 	name: string;
 	alpha: number;
 	beta: number;
@@ -9,7 +9,7 @@ type Beta = {
 	};
 };
 
-type Normal = {
+export type Normal = {
 	name: string;
 	mean: number;
 	sd: number;
@@ -18,7 +18,7 @@ type Normal = {
 	};
 };
 
-type Weibull = {
+export type Weibull = {
 	name: string;
 	threshold: number;
 	shape: number;
@@ -28,7 +28,7 @@ type Weibull = {
 	};
 };
 
-type Change<T> = {
+export type Change<T> = {
 	name: string;
 	from: T;
 	to: T;
@@ -39,16 +39,16 @@ type Change<T> = {
 	};
 };
 
-type Categorical = {
+export type Categorical = {
 	name: string;
 	ps: number[];
 	ns: string[];
 	_: { dist: 'categorical' };
 };
 
-type Onset = 'gradual' | 'sudden';
+export type Onset = 'gradual' | 'sudden';
 
-type Cauchy = {
+export type Cauchy = {
 	name: string;
 	location: number;
 	scale: number;
@@ -57,30 +57,45 @@ type Cauchy = {
 	};
 };
 
-type BetaCombinationRule = 'or' | 'and';
+export type BetaCombinationRule = 'or' | 'and';
 
-type Symptom = {
+export type Symptom = {
 	name: string;
 	locations: Beta[];
+	sex: {
+		male: Beta;
+		female: Beta;
+	};
+	age: {
+		newborn: Beta;
+		infant: Beta;
+		toddler: Beta;
+		preAdolescent: Beta;
+		adolescent: Beta;
+		youngAdult: Beta;
+		youngMiddleAgeAdult: Beta;
+		oldMiddleAgeAdult: Beta;
+		elderly: Beta;
+	};
 	//   duration: Weibull;
 	duration: Normal;
 	onset: Categorical;
-	nature: (Beta | Weibull | Change)[];
+	nature: (Beta | Weibull | Change<any>)[];
 	periodicity: Categorical;
 	aggravators: Beta[];
 	relievers: Beta[];
 	timeToOnset: Cauchy;
 };
 
-type ConditionModel = {
+export type ConditionModel = {
 	symptoms: Symptom[];
 };
 
-type Condition = {
+export type Condition = {
 	name: string;
 };
 
-type PatientSymptom = {
+export type PatientSymptom = {
 	name: string;
 	locations: string[];
 	duration: number;
@@ -91,20 +106,20 @@ type PatientSymptom = {
 	relievers: string[];
 };
 
-type FormattedPatientSymptom = PatientSymptom & {
+export type FormattedPatientSymptom = PatientSymptom & {
 	timeToOnset: number;
 };
 
-type Signs = any;
+export type Sign = any;
 
-type Patient = {
+export type Patient = {
 	age: number;
 	sex: Sex;
 	symptoms: PatientSymptom[];
 	signs: Sign[];
 };
 
-type FormattedPatient = {
+export type FormattedPatient = {
 	age: number;
 	sex: Sex;
 	symptoms: FormattedPatientSymptom[];
