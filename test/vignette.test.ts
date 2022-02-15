@@ -1,4 +1,9 @@
-import { createPatient, formatPatient, interpret } from '../src';
+import {
+	createPatient,
+	formatPatient,
+	interpret,
+	interpretRandom,
+} from '../src';
 // import {
 // 	createBeta,
 // 	createCategorical,
@@ -23,122 +28,107 @@ const testModel = {
 	condition: 'tinea-nigra',
 	symptoms: [
 		{
-			name: 'cough',
+			name: 'fever',
 			locations: [],
+			sex: {
+				male: {
+					name: 'male',
+					alpha: 100,
+					beta: 1,
+					_: {
+						dist: 'beta',
+					},
+				},
+				female: {
+					name: 'female',
+					alpha: 100,
+					beta: 1,
+					_: {
+						dist: 'beta',
+					},
+				},
+			},
+			age: {
+				newborn: {
+					name: 'newborn',
+					alpha: 90,
+					beta: 10,
+					_: {
+						dist: 'beta',
+					},
+				},
+				adolescent: {
+					name: 'adolescent',
+					alpha: 89,
+					beta: 11,
+					_: {
+						dist: 'beta',
+					},
+				},
+				infant: {
+					name: 'infant',
+					alpha: 80,
+					beta: 20,
+					_: {
+						dist: 'beta',
+					},
+				},
+				toddler: {
+					name: 'toddler',
+					alpha: 80,
+					beta: 20,
+					_: {
+						dist: 'beta',
+					},
+				},
+				child: {
+					name: 'child',
+					alpha: 81,
+					beta: 19,
+					_: {
+						dist: 'beta',
+					},
+				},
+				youngAdult: {
+					name: 'youngAdult',
+					alpha: 1,
+					beta: 1,
+					_: {
+						dist: 'beta',
+					},
+				},
+				adult: {
+					name: 'adult',
+					alpha: 1,
+					beta: 1,
+					_: {
+						dist: 'beta',
+					},
+				},
+				senior: {
+					name: 'senior',
+					alpha: 1,
+					beta: 1,
+					_: {
+						dist: 'beta',
+					},
+				},
+			},
 			duration: {
 				name: 'duration',
 				mean: 1825,
 				sd: 1,
 				_: {
-					dist: 'normal' as 'normal',
+					dist: 'normal',
 				},
-				variance: 4,
+				variance: 1,
 			},
 			onset: {
 				name: 'onset',
-				ps: [0.5, 0.5],
+				ps: [0.05, 0.95],
 				ns: ['gradual', 'sudden'],
 				_: {
-					dist: 'categorical' as 'categorical',
-				},
-			},
-			nature: [
-				{
-					name: 'dry',
-					alpha: 80,
-					beta: 20,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-				{
-					name: 'jelly-like-sputum',
-					alpha: 1,
-					beta: 1,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-			],
-			periodicity: {
-				name: 'periodicity',
-				ps: [0, 0.25, 0.25, 0.5],
-				ns: ['morning', 'night', 'intermittent', 'non-specific'],
-				_: {
-					dist: 'categorical' as 'categorical',
-				},
-			},
-			aggravators: [
-				{
-					name: 'dust',
-					alpha: 1,
-					beta: 1,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-				{
-					name: 'pollen',
-					alpha: 1,
-					beta: 1,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-				{
-					name: 'smoke',
-					alpha: 1,
-					beta: 1,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-				{
-					name: 'laying-down',
-					alpha: 1,
-					beta: 1,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-			],
-			relievers: [
-				{
-					name: 'antihistamines',
-					alpha: 1100,
-					beta: 10,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-			],
-			timeToOnset: {
-				name: 'timeToOnset',
-				location: 2.5,
-				scale: 1.5,
-				_: {
-					dist: 'cauchy' as 'cauchy',
-				},
-			},
-		},
-		{
-			name: 'fever',
-			locations: [],
-			duration: {
-				name: 'duration',
-				mean: 17,
-				sd: 1,
-				_: {
-					dist: 'normal' as 'normal',
-				},
-				variance: 3,
-			},
-			onset: {
-				name: 'onset',
-				ps: [0.85, 0.15],
-				ns: ['gradual', 'sudden'],
-				_: {
-					dist: 'categorical' as 'categorical',
+					dist: 'categorical',
 				},
 			},
 			nature: [
@@ -147,7 +137,7 @@ const testModel = {
 					alpha: 10,
 					beta: 90,
 					_: {
-						dist: 'beta' as 'beta',
+						dist: 'beta',
 					},
 				},
 				{
@@ -155,13 +145,13 @@ const testModel = {
 					alpha: 90,
 					beta: 10,
 					_: {
-						dist: 'beta' as 'beta',
+						dist: 'beta',
 					},
 				},
 			],
 			periodicity: {
 				name: 'periodicity',
-				ps: [0.1, 0, 0.8, 0, 0, 0.1, 0],
+				ps: [0, 0, 0, 0, 0, 0.9, 0.1],
 				ns: [
 					'persistent',
 					'intermittent',
@@ -172,59 +162,34 @@ const testModel = {
 					'night',
 				],
 				_: {
-					dist: 'categorical' as 'categorical',
+					dist: 'categorical',
 				},
 			},
 			aggravators: [
 				{
 					name: 'pollen',
-					alpha: 10,
-					beta: 90,
+					alpha: 100,
+					beta: 1,
 					_: {
-						dist: 'beta' as 'beta',
+						dist: 'beta',
 					},
 				},
 				{
-					name: 'crying',
-					alpha: 10,
-					beta: 90,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-				{
-					name: 'light-activity',
-					alpha: 1,
-					beta: 99,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-				{
-					name: 'cold-weather',
-					alpha: 2,
-					beta: 98,
-					_: {
-						dist: 'beta' as 'beta',
-					},
-				},
-			],
-			relievers: [
-				{
-					name: 'antipyretics',
-					alpha: 1000,
+					name: 'standing-up',
+					alpha: 90,
 					beta: 10,
 					_: {
-						dist: 'beta' as 'beta',
+						dist: 'beta',
 					},
 				},
 			],
+			relievers: [],
 			timeToOnset: {
 				name: 'timeToOnset',
-				location: 7,
-				scale: 3,
+				location: 9,
+				scale: 4,
 				_: {
-					dist: 'cauchy' as 'cauchy',
+					dist: 'cauchy',
 				},
 			},
 		},
@@ -240,7 +205,7 @@ const testPatient = createPatient(
 			name: 'fever',
 			locations: [],
 			duration: 1,
-			onset: 'gradual',
+			onset: 'sudden',
 			nature: [],
 			periodicity: 'intermittent',
 			aggravators: [],
@@ -264,9 +229,18 @@ describe('Patient Symptom Assessment', () => {
 	const formattedPatient = formatPatient(testPatient);
 
 	it('does not blow up in our face', () => {
-		const result = interpret(testModel)(formattedPatient);
+		// @ts-ignore
+		const result = interpret(false)(testModel)(formattedPatient);
 
 		console.log(result);
 		expect(result).toBeDefined();
+	});
+
+	it('does not blow up if we run a stochastic inference', () => {
+		// @ts-ignore
+		const results = interpretRandom(1000)(testModel)(formattedPatient);
+
+		console.log(results);
+		expect(results).toBeDefined();
 	});
 });

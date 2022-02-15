@@ -1529,7 +1529,7 @@
     "@stdlib/string" "^0.0.x"
     "@stdlib/utils" "^0.0.x"
 
-"@stdlib/types@^0.0.x":
+"@stdlib/types@^0.0.13", "@stdlib/types@^0.0.x":
   version "0.0.13"
   resolved "https://registry.yarnpkg.com/@stdlib/types/-/types-0.0.13.tgz#4cf4666286294a48c589a37c2b0b48c9076128f9"
   integrity sha512-8aPkDtaJM/XZENqhoj7BYuwENLGyxz1xfLIcf2zct7kLZMi0rODzks3n65LEMIR9Rh3rFDXlwc35XvzEkTpmZQ==

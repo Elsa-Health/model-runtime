@@ -88,6 +88,12 @@ export function createOnset(onset: T.Onset): T.Onset {
 	return onset;
 }
 
+/*
+ * Create a caucy random variable
+ * param {name}: number
+ * param {location}: number
+ * param {scale}: number
+ */
 export function createCauchy(
 	name: string,
 	location: number,

@@ -60,7 +60,7 @@ pt.symptoms[0].nature = [];
 
 describe('patient modelling stuff', () => {
 	it('works', () => {
-		const result = interpret(model)(formatPatient(pt));
+		const result = interpret(false)(model)(formatPatient(pt));
 
 		console.log(result);
 		expect(result).toBeDefined();
@@ -73,7 +73,7 @@ describe('patient modelling stuff', () => {
 		// 		createBeta('two', 10, 100),
 		// 	])([])
 		// );
-		const emptyAndResult = getBetaListMatch('and')([])([]);
+		const emptyAndResult = getBetaListMatch(false)('and')([])([]);
 		expect(emptyAndResult).toEqual(1);
 	});
 });

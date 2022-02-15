@@ -59,6 +59,24 @@ export type Cauchy = {
 
 export type BetaCombinationRule = 'or' | 'and';
 
+// Newborn: 0 weeks - 2 months
+// Infants: 2 months - 12 months
+// Toddler: 12 months - 4 years
+// Child: 4 years - 12 years
+// Adolescent: 12-18 years
+// Young Adult: 18-34 years
+// Adult: 35- 64 years
+// Senior: 65 years +
+export type AgeGroup =
+	| 'newborn'
+	| 'infant'
+	| 'toddler'
+	| 'child'
+	| 'adolescent'
+	| 'youngAdult'
+	| 'adult'
+	| 'senior';
+
 export type Symptom = {
 	name: string;
 	locations: Beta[];
@@ -66,17 +84,7 @@ export type Symptom = {
 		male: Beta;
 		female: Beta;
 	};
-	age: {
-		newborn: Beta;
-		infant: Beta;
-		toddler: Beta;
-		preAdolescent: Beta;
-		adolescent: Beta;
-		youngAdult: Beta;
-		youngMiddleAgeAdult: Beta;
-		oldMiddleAgeAdult: Beta;
-		elderly: Beta;
-	};
+	age: Record<AgeGroup, Beta>;
 	//   duration: Weibull;
 	duration: Normal;
 	onset: Categorical;

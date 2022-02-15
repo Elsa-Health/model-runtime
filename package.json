@@ -49,6 +49,7 @@
 	],
 	"devDependencies": {
 		"@size-limit/preset-small-lib": "^7.0.5",
+		"@stdlib/types": "^0.0.13",
 		"husky": "^7.0.4",
 		"size-limit": "^7.0.5",
 		"tsdx": "^0.14.1",

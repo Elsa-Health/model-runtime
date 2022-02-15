@@ -29,6 +29,20 @@ export const randomSymptom = (name: string): T.Symptom => {
 			createBeta('face', 1000, 10),
 			createBeta('neck', 100, 1000),
 		],
+		age: {
+			adolescent: createBeta('adolescent', 100, 1),
+			adult: createBeta('adult', 100, 1),
+			child: createBeta('child', 100, 1),
+			newborn: createBeta('newborn', 100, 1),
+			senior: createBeta('senior', 100, 1),
+			infant: createBeta('infant', 100, 1),
+			toddler: createBeta('toddler', 100, 1),
+			youngAdult: createBeta('youngAdult', 100, 1),
+		},
+		sex: {
+			female: createBeta('female', 100, 1),
+			male: createBeta('male', 100, 1),
+		},
 		duration,
 		onset: createCategorical(
 			'onset',
