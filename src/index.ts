@@ -20,7 +20,6 @@ export const formatPatient = (patient: T.Patient): T.FormattedPatient => {
 	return (createSymptomProgression(patient) as unknown) as T.FormattedPatient;
 };
 
-
 /**
  * Given the patient presentation, order the symptoms in order of presentation to create a coherent flow of symptoms
  *
@@ -92,6 +91,19 @@ export const getBetaListMatch = (stochastic: boolean) => (
 		return isPresent ? rand() : 1 - rand();
 	}
 
+	function isSymptomPresent(
+		patientSymptoms: string[],
+		symptom: T.Beta
+	): boolean {
+		if (symptom._.combination === true && Array.isArray(symptom.name)) {
+			return symptom.name
+				.map(n => patientSymptoms.includes(n))
+				.every(v => v);
+		} else {
+			return patientSymptoms.includes(symptom.name as string);
+		}
+	}
+
 	const getP = stochastic ? getRandomBetaP : getBetaP;
 
 	// If there are no patient symptoms and the model is also empty, then p = 1
@@ -106,7 +118,7 @@ export const getBetaListMatch = (stochastic: boolean) => (
 
 	if (rule === 'and') {
 		return modelSymptoms.reduce((acc, curr) => {
-			const isPresent = patientSymptoms.includes(curr.name);
+			const isPresent = isSymptomPresent(patientSymptoms, curr);
 			const p = getP(curr.alpha, curr.beta, isPresent);
 			return acc * p;
 			// return acc + p; // take mean later??
@@ -114,7 +126,7 @@ export const getBetaListMatch = (stochastic: boolean) => (
 	} else {
 		const red = modelSymptoms.reduce(
 			(acc, curr) => {
-				const isPresent = patientSymptoms.includes(curr.name);
+				const isPresent = isSymptomPresent(patientSymptoms, curr);
 				const p = getP(curr.alpha, curr.beta, isPresent);
 				return {
 					sum: acc.sum + p,

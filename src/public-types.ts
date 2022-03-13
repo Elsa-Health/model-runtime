@@ -1,13 +1,23 @@
 export type Sex = 'male' | 'female';
 
-export type Beta = {
-	name: string;
-	alpha: number;
-	beta: number;
-	_: {
-		dist: 'beta';
-	};
+export type BetaOptions = {
+	dist: 'beta';
+	combination: boolean;
 };
+
+export type Beta =
+	| {
+			name: string;
+			alpha: number;
+			beta: number;
+			_: BetaOptions & { combination: false };
+	  }
+	| {
+			name: string[];
+			alpha: number;
+			beta: number;
+			_: BetaOptions & { combination: true };
+	  };
 
 export type Normal = {
 	name: string;

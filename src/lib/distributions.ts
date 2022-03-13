@@ -1,17 +1,40 @@
 import * as T from '../public-types';
 
-export function createBeta(name: string, alpha: number, beta: number): T.Beta {
+export function createBeta(
+	name: string | string[],
+	alpha: number,
+	beta: number,
+	_ = { dist: 'beta', combination: false } as T.BetaOptions
+): T.Beta {
 	if (alpha <= 0 || beta <= 0) {
 		throw new Error(
 			`Invalid beta distribution parameters: ${alpha}/${beta}`
 		);
 	}
-	return {
-		name,
-		alpha,
-		beta,
-		_: { dist: 'beta' },
-	};
+	if (Array.isArray(name) && _.combination === true) {
+		return {
+			name,
+			alpha,
+			beta,
+			_: { ..._, dist: 'beta', combination: true },
+		};
+	} else if (!Array.isArray(name)) {
+		// if (!Array.isArray(name) && _.combination === false) {
+		// 	throw new Error(
+		// 		`If creating a combination beta variable, pass a list of names in the name parameter`
+		// 	);
+		// }
+		return {
+			name,
+			alpha,
+			beta,
+			_: { ..._, dist: 'beta', combination: false },
+		};
+	}
+
+	throw new Error(
+		`Invalid beta random variable. Please confirm that the name is a list of strings if you are passing "combination: true"`
+	);
 }
 
 export function createNormal(name: string, mean: number, sd: number): T.Normal {
