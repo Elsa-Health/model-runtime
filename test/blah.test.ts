@@ -1,9 +1,5 @@
-import {
-	createPatient,
-	formatPatient,
-	getBetaListMatch,
-	interpret,
-} from '../src';
+import { createPatient, formatPatient, interpret } from '../src';
+import { getBetaListMatch } from '../src/lib/getBetaListMatch';
 import { randomSymptom } from '../src/utils';
 // import { createBeta } from '../src/lib/distributions';
 
