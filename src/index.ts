@@ -104,7 +104,8 @@ export const interpret: InterpretFunction = (
 		// Could not find the symptom in th emodel
 		if (modelSymptoms === undefined) {
 			// TODO: handle patient has extra symptoms (penalize?)
-			return;
+			// console.log("")
+			return {locationMatch: 0, aggravatorsMatch: 0, relieversMatch: 0, durationMatch: 0, natureMatch: 0, onsetMatch: 0, periodicityMatch: 0, timeToOnsetMatch: 0};
 		}
 
 		const locationMatch = getBetaListMatch(stochastic)('or')(
@@ -199,7 +200,7 @@ export const sample = (count: number) => (fn: Function): T.Normal => {
 	const arr = array2iterator(samples);
 	const std = ns.iterstdev(arr);
 
-	return distributions.createNormal('results', mean(samples), std);
+	return distributions.createNormal('results', mean(samples), std || 0.001);
 };
 
 export const interpretRandom = (count: number = 1000) => (

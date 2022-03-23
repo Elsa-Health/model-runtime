@@ -28,7 +28,7 @@ const testModel = {
 	condition: 'tinea-nigra',
 	symptoms: [
 		{
-			name: 'fever',
+			name: 'chills',
 			locations: [],
 			sex: {
 				male: {
@@ -202,10 +202,10 @@ const testPatient = createPatient(
 	18,
 	[
 		{
-			name: 'fever',
+			name: 'chills',
 			locations: [],
 			duration: 1,
-			onset: 'sudden',
+			onset: 'gradual',
 			nature: [],
 			periodicity: 'intermittent',
 			aggravators: [],
