@@ -109,7 +109,7 @@ const ageMap: [string, [number, number]][] = [
 ];
 
 export const convertAgeToGroup = (age: number): string => {
-	const group = ageMap.find(m => age >= m[1][0] && age < m[1][0]);
+	const group = ageMap.find(m => age >= m[1][0] && age < m[1][1]);
 
 	if (group === undefined || age < 0) {
 		return 'n/a';

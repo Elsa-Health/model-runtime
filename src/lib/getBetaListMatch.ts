@@ -9,33 +9,6 @@ export const getBetaListMatch = (stochastic: boolean) => (
 	rule: T.BetaCombinationRule = 'and'
 ) => (modelSymptoms: T.Beta[]) => (patientSymptoms: string[]) => {
 	// P(A and B) = P(A) x P(B | A) is probably a better approach here because the events are not independent
-	function getBetaP(alpha: number, beta: number, isPresent: boolean): number {
-		const dist = betaDist.Beta(alpha, beta);
-		const p = isPresent ? dist.mean : 1 - dist.mean;
-		return p;
-	}
-
-	function getRandomBetaP(
-		alpha: number,
-		beta: number,
-		isPresent: boolean
-	): number {
-		const rand = betaRV.factory(alpha || 1, beta || 1);
-		return isPresent ? rand() : 1 - rand();
-	}
-
-	function isSymptomPresent(
-		patientSymptoms: string[],
-		symptom: T.Beta
-	): boolean {
-		if (symptom._.combination === true && Array.isArray(symptom.name)) {
-			return symptom.name
-				.map(n => patientSymptoms.includes(n))
-				.every(v => v);
-		} else {
-			return patientSymptoms.includes(symptom.name as string);
-		}
-	}
 
 	const getP = stochastic ? getRandomBetaP : getBetaP;
 
@@ -76,3 +49,33 @@ export const getBetaListMatch = (stochastic: boolean) => (
 		return red.sum - red.prod;
 	}
 };
+
+export function getBetaP(
+	alpha: number,
+	beta: number,
+	isPresent: boolean
+): number {
+	const dist = betaDist.Beta(alpha, beta);
+	const p = isPresent ? dist.mean : 1 - dist.mean;
+	return p;
+}
+
+export function getRandomBetaP(
+	alpha: number,
+	beta: number,
+	isPresent: boolean
+): number {
+	const rand = betaRV.factory(alpha || 1, beta || 1);
+	return isPresent ? rand() : 1 - rand();
+}
+
+export function isSymptomPresent(
+	patientSymptoms: string[],
+	symptom: T.Beta
+): boolean {
+	if (symptom._.combination === true && Array.isArray(symptom.name)) {
+		return symptom.name.map(n => patientSymptoms.includes(n)).every(v => v);
+	} else {
+		return patientSymptoms.includes(symptom.name as string);
+	}
+}

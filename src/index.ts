@@ -1,7 +1,11 @@
 import * as distributions from './lib/distributions';
 import * as utils from './utils';
 import * as T from './public-types';
-import { getBetaListMatch } from './lib/getBetaListMatch';
+import {
+	getBetaListMatch,
+	getBetaP,
+	getRandomBetaP,
+} from './lib/getBetaListMatch';
 
 // const betaDist = require('@stdlib/stats/base/dists/beta');
 // const betaRV = require('@stdlib/random/base/beta');
@@ -95,6 +99,9 @@ type InterpretFunction = (
 export const interpret: InterpretFunction = (
 	stochastic = false
 ) => model => patient => {
+	const patientAgeGroup: T.AgeGroup = convertAgeToGroup(
+		patient.age || 18
+	) as T.AgeGroup;
 	// Compare all the symptoms that the patient and the model have
 	const assesment = patient.symptoms.map(psymptom => {
 		const modelSymptoms = model.symptoms.find(
@@ -117,12 +124,18 @@ export const interpret: InterpretFunction = (
 			};
 		}
 
-		const ageMatch = getBetaListMatch(stochastic)('or')(
-			Object.values(modelSymptoms.age)
-		)([convertAgeToGroup(patient.age)]);
-		const sexMatch = getBetaListMatch(stochastic)('or')(
-			Object.values(modelSymptoms.sex)
-		)([patient.sex]);
+		const getP = stochastic ? getRandomBetaP : getBetaP;
+		const ageMatch = (() => {
+			const group = modelSymptoms.age[patientAgeGroup];
+
+			// console.log({ group, patientAgeGroup, age: patient.age });
+			return getP(group.alpha, group.beta, true);
+		})();
+		const sexMatch = (() => {
+			const pSex = modelSymptoms.sex[patient.sex];
+
+			return getP(pSex.alpha, pSex.beta, true);
+		})();
 
 		const locationMatch = getBetaListMatch(stochastic)('or')(
 			modelSymptoms.locations
