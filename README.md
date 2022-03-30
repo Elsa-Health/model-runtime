@@ -18,12 +18,43 @@ A simple library to evaulate Elsa Open Health Models for use in any environment.
 For now,
 
 ```
-yarn add https://github.com/Elsa-Health/model-interpreter#main
+yarn add @elsa-health/model-runtime
 ```
 
 ## Usage/Examples
 
-// TODO
+```js
+import {
+	createPatient,
+	interpret,
+	formatPatient,
+} from '@elsa-health/model-runtime';
+
+const symptoms = [
+	{
+		name: 'fever',
+		locations: [],
+		duration: 3,
+		onset: 'sudden',
+		nature: 'high-grade',
+		periodicity: 'intermittent',
+		aggravators: ['bright-lights', 'crying'],
+		relievers: ['paracetamol'],
+	},
+];
+const signs = [];
+
+// Define your patient
+const patient = createPatient('male', 22, symptoms, signs);
+
+// Run the assessment
+const isStochastic = false; // set to true if you want to allow randomness in the results - good for error margins
+const result = interpret(isStochastic)(diseaseModel)(
+	formatPatient(formatPatient)
+);
+
+console.log('Here is the result: ', result);
+```
 
 ## Deployment
 
@@ -31,16 +62,15 @@ yarn add https://github.com/Elsa-Health/model-interpreter#main
 
 ## Roadmap
 
--   [ ] Project Rename - Options: Edward (Edward Jenner), even though hundreds of years Africans have been innouclating their children. - https://www.medicaldaily.com/people-medicine-influence-history-374620
--   [ ] 80% Test coverage
+-   [x] 80% Test coverage
 -   [ ] Support for more random variables in symptom natures
     -   [ ] Support Weibul Variables
     -   [ ] Support Change Variables - size, color, elevatedness, etc
--   [ ] Optional Support for uncertainity in the results through sampling of the random variables.
+-   [x] Optional Support for uncertainity in the results through sampling of the random variables.
 -   [ ] Support patient assessment results that show exactly what symptom features are not matching or are matching with different degees. (path towards explainability??)
 -   [ ] Support weights for each of the symptom features
--   [ ] Support for age disparities
--   [ ] Support for sex disparities
+-   [x] Support for age differences in model definitions
+-   [x] Support for sex differences in model definitions
 
 ## FAQ
 
