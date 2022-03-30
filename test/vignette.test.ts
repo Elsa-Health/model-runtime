@@ -33,8 +33,8 @@ const testModel = {
 			sex: {
 				male: {
 					name: 'male',
-					alpha: 100,
-					beta: 1,
+					alpha: 10,
+					beta: 90,
 					_: {
 						dist: 'beta',
 					},
@@ -198,8 +198,8 @@ const testModel = {
 };
 
 const testPatient = createPatient(
-	'female',
-	18,
+	'male',
+	1,
 	[
 		{
 			name: 'chills',

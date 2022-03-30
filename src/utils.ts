@@ -66,18 +66,6 @@ export const randomSymptom = (name: string): T.Symptom => {
 	};
 };
 
-export const searchForSymptom = (symptomsList: Record<string, any>[]) => (
-	resultsCount = 4
-) => (name: string) => {
-	return symptomsList
-		.filter(
-			sy =>
-				sy.symptom.includes(name) ||
-				sy.tags.filter((t: string) => t.includes(name)).length > 0
-		)
-		.slice(0, resultsCount);
-};
-
 export const friendlySymptomName = (name: string) => {
 	return upperFirst(name.split('-').join(' '));
 };
@@ -107,4 +95,24 @@ export const isEmpty = (list: any[]): boolean => {
 
 export const mean = (list: number[]): number => {
 	return list.reduce((a, b) => a + b, 0) / list.length;
+};
+
+const ageMap: [string, [number, number]][] = [
+	['newborn', [0, 0.166]],
+	['infant', [0.166, 1.0]],
+	['toddler', [1.0, 4.0]],
+	['child', [4.0, 12.0]],
+	['adolescent', [12.0, 18.0]],
+	['youngAdult', [18.0, 35.0]],
+	['adult', [35, 65.0]],
+	['senior', [65, 200.0]],
+];
+
+export const convertAgeToGroup = (age: number): string => {
+	const group = ageMap.find(m => age >= m[1][0] && age < m[1][0]);
+
+	if (group === undefined || age < 0) {
+		return 'n/a';
+	}
+	return group[0];
 };

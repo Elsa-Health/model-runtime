@@ -14,7 +14,7 @@ const ns = require('@stdlib/stats/iter');
 
 export { distributions, utils };
 const { createBeta } = distributions;
-const { isEmpty, isBetaList, mean } = utils;
+const { isEmpty, isBetaList, mean, convertAgeToGroup } = utils;
 
 // Format the patient to do anything that is needed
 export const formatPatient = (patient: T.Patient): T.FormattedPatient => {
@@ -105,8 +105,24 @@ export const interpret: InterpretFunction = (
 		if (modelSymptoms === undefined) {
 			// TODO: handle patient has extra symptoms (penalize?)
 			// console.log("")
-			return {locationMatch: 0, aggravatorsMatch: 0, relieversMatch: 0, durationMatch: 0, natureMatch: 0, onsetMatch: 0, periodicityMatch: 0, timeToOnsetMatch: 0};
+			return {
+				locationMatch: 0,
+				aggravatorsMatch: 0,
+				relieversMatch: 0,
+				durationMatch: 0,
+				natureMatch: 0,
+				onsetMatch: 0,
+				periodicityMatch: 0,
+				timeToOnsetMatch: 0,
+			};
 		}
+
+		const ageMatch = getBetaListMatch(stochastic)('or')(
+			Object.values(modelSymptoms.age)
+		)([convertAgeToGroup(patient.age)]);
+		const sexMatch = getBetaListMatch(stochastic)('or')(
+			Object.values(modelSymptoms.sex)
+		)([patient.sex]);
 
 		const locationMatch = getBetaListMatch(stochastic)('or')(
 			modelSymptoms.locations
@@ -171,6 +187,8 @@ export const interpret: InterpretFunction = (
 		})(0.75);
 
 		return {
+			ageMatch,
+			sexMatch,
 			locationMatch,
 			durationMatch,
 			onsetMatch,

@@ -27,7 +27,6 @@ describe('Beta distributions', () => {
 			'one',
 			'two',
 		]);
-		console.log({ simpleSum });
 		expect(simpleSum).toBeDefined();
 
 		const simpleBetas2 = [
@@ -41,7 +40,6 @@ describe('Beta distributions', () => {
 			'one',
 			'three',
 		]);
-		console.log({ simpleSum2 });
 		expect(simpleSum2).toBeLessThan(simpleSum);
 	});
 });
