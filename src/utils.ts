@@ -81,11 +81,11 @@ export const toggleCondition = (
 };
 
 export const isBetaList = (list: any[]): boolean => {
-	return list.some(val => val?._?.type !== 'beta');
+	return !list.some(val => val?._?.dist !== 'beta');
 };
 
 export const isWeibullList = (list: any[]): boolean => {
-	return list.some(val => val?._?.type !== 'weibull');
+	return !list.some(val => val?._?.dist !== 'weibull');
 };
 
 export const isEmpty = (list: any[]): boolean => {

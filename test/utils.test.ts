@@ -1,10 +1,12 @@
 import {
 	convertAgeToGroup,
 	friendlySymptomName,
+	isWeibullList,
 	randomSymptom,
 	toggleCondition,
 } from '../src/utils';
 import fc from 'fast-check';
+import { createNormal, createWeibull } from '../src/lib/distributions';
 
 describe('Utility functions are working fine', () => {
 	it('Can get an age group given a numerical age', () => {
@@ -45,5 +47,13 @@ describe('Utility functions are working fine', () => {
 		expect(a.sort((a, b) => (a.name > b.name ? -1 : 1))).toEqual(
 			c.sort((a, b) => (a.name > b.name ? -1 : 1))
 		);
+	});
+
+	it('Checks if a list is of weibull variables', () => {
+		const wList = [createWeibull('a', 10, 1, 1)];
+		const nList = [createNormal('b', 4, 2)];
+
+		expect(isWeibullList(wList)).toBe(true);
+		expect(isWeibullList(nList)).toBe(false);
 	});
 });
