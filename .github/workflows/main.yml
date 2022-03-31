@@ -39,7 +39,7 @@ jobs:
               run: yarn build
 
     finish:
-      needs: test
+      needs: build
       runs-on: ${{ matrix.os }}
       steps:
       - name: Coveralls Finished
