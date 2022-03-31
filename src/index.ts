@@ -241,7 +241,7 @@ export const interpretRandom = (count: number = 1000) => (
 };
 
 // @ts-expect-error
-function combineBetas(name = 'beta', betas: Array<Beta>): Beta {
+export function combineBetas(name = 'beta', betas: Array<Beta>): Beta {
 	const rawSum = betas.reduce(
 		(acc, beta) => {
 			return {

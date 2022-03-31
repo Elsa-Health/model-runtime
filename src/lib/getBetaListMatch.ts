@@ -1,7 +1,7 @@
 import * as T from '../public-types';
+import { isEmpty } from '../utils';
 const betaDist = require('@stdlib/stats/base/dists/beta');
 const betaRV = require('@stdlib/random/base/beta');
-import { isEmpty } from '../utils';
 
 // for each beta random variable, create a distribution and take the mean of it and multiply the resulting "p" of each one of them.
 // TODO: Figure out the penalty variables
