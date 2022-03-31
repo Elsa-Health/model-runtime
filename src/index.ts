@@ -200,16 +200,16 @@ export const interpret: InterpretFunction = (
 		})(0.75);
 
 		return {
-			ageMatch,
 			sexMatch,
-			locationMatch,
-			durationMatch,
-			onsetMatch,
-			natureMatch,
-			periodicityMatch,
-			aggravatorsMatch,
-			relieversMatch,
-			timeToOnsetMatch,
+			ageMatch: ageMatch * sexMatch,
+			locationMatch: locationMatch * sexMatch,
+			durationMatch: durationMatch * sexMatch,
+			onsetMatch: onsetMatch * sexMatch,
+			natureMatch: natureMatch * sexMatch,
+			periodicityMatch: periodicityMatch * sexMatch,
+			aggravatorsMatch: aggravatorsMatch * sexMatch,
+			relieversMatch: relieversMatch * sexMatch,
+			timeToOnsetMatch: timeToOnsetMatch * sexMatch,
 		};
 	});
 

@@ -41,8 +41,8 @@ const testModel = {
 				},
 				female: {
 					name: 'female',
-					alpha: 100,
-					beta: 1,
+					alpha: 0.01,
+					beta: 100.01,
 					_: {
 						dist: 'beta',
 					},
