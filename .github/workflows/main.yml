@@ -37,3 +37,13 @@ jobs:
 
             - name: Build
               run: yarn build
+
+    finish:
+      needs: test
+      runs-on: ${{ matrix.os }}
+      steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
