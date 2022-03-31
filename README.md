@@ -74,7 +74,9 @@ console.log('Here is the result: ', result);
 
 ## FAQ
 
-// TODO
+#### Where do I get the disease models to run?
+
+The disease models can be found at https://open.elsa.health
 
 ## License
 
