@@ -240,8 +240,7 @@ export const interpretRandom = (count: number = 1000) => (
 	return sample(count)(() => interpret(true)(model)(patient));
 };
 
-// @ts-expect-error
-export function combineBetas(name = 'beta', betas: Array<Beta>): Beta {
+export function combineBetas(name = 'beta', betas: Array<T.Beta>): T.Beta {
 	const rawSum = betas.reduce(
 		(acc, beta) => {
 			return {
