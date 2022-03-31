@@ -103,7 +103,7 @@ export const interpret: InterpretFunction = (
 		patient.age || 18
 	) as T.AgeGroup;
 	// Compare all the symptoms that the patient and the model have
-	const assesment = patient.symptoms.map(psymptom => {
+	const assesment = patient.symptoms?.map(psymptom => {
 		const modelSymptoms = model.symptoms.find(
 			msymptom => msymptom.name === psymptom.name
 		);
@@ -216,8 +216,7 @@ export const interpret: InterpretFunction = (
 	const assessmentResults = mean(
 		assesment
 			.filter(r => r !== undefined)
-			// @ts-ignore
-			.map(res => mean(Object.values(res)))
+			.map(res => mean(Object.values(res) as number[])) as number[]
 	);
 	return assessmentResults;
 };

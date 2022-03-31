@@ -12,10 +12,9 @@ A simple library to evaulate Elsa Open Health Models for use in any environment.
 
 [![Model Interpreter](https://img.shields.io/badge/model%20interpreter-0.0.1-yellow)](https://img.shields.io/badge/model--interpreter--0.0.3-yellow)
 
-## Installation
+[![Coverage Status](https://coveralls.io/repos/github/Elsa-Health/model-runtime/badge.svg?branch=main)](https://coveralls.io/github/Elsa-Health/model-runtime?branch=main)
 
-// TODO
-For now,
+## Installation
 
 ```
 yarn add @elsa-health/model-runtime
@@ -42,6 +41,7 @@ const symptoms = [
 		relievers: ['paracetamol'],
 	},
 ];
+
 const signs = [];
 
 // Define your patient
@@ -65,7 +65,7 @@ console.log('Here is the result: ', result);
 -   [x] 80% Test coverage
 -   [ ] Support for more random variables in symptom natures
     -   [ ] Support Weibul Variables
-    -   [ ] Support Change Variables - size, color, elevatedness, etc
+    -   [ ] Support Changing Variables - size, color, elevatedness, etc
 -   [x] Optional Support for uncertainity in the results through sampling of the random variables.
 -   [ ] Support patient assessment results that show exactly what symptom features are not matching or are matching with different degees. (path towards explainability??)
 -   [ ] Support weights for each of the symptom features

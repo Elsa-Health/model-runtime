@@ -1,4 +1,3 @@
-// import _, { random } from 'lodash';
 import * as T from './public-types';
 import {
 	createBeta,
@@ -97,7 +96,9 @@ export const mean = (list: number[]): number => {
 	return list.reduce((a, b) => a + b, 0) / list.length;
 };
 
-const ageMap: [string, [number, number]][] = [
+// type Range = [number, number];
+
+const ageMap: any[] = [
 	['newborn', [0, 0.166]],
 	['infant', [0.166, 1.0]],
 	['toddler', [1.0, 4.0]],

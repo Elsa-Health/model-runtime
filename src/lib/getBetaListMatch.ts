@@ -74,7 +74,9 @@ export function isSymptomPresent(
 	symptom: T.Beta
 ): boolean {
 	if (symptom._.combination === true && Array.isArray(symptom.name)) {
-		return symptom.name.map(n => patientSymptoms.includes(n)).every(v => v);
+		return (symptom.name as string[])
+			?.map(n => patientSymptoms.includes(n))
+			.every(v => v);
 	} else {
 		return patientSymptoms.includes(symptom.name as string);
 	}
