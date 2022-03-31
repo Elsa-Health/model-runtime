@@ -42,8 +42,6 @@ export const getBetaListMatch = (stochastic: boolean) => (
 			{ sum: 0, prod: 1 }
 		);
 
-		// (red.sum === 0 || red.prod === red.sum) && console.log({ red });
-
 		if (modelSymptoms.length === 1) return red.sum;
 
 		return red.sum - red.prod;

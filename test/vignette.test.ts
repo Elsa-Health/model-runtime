@@ -240,7 +240,7 @@ describe('Patient Symptom Assessment', () => {
 		// @ts-ignore
 		const results = interpretRandom(1000)(testModel)(formattedPatient);
 
-		console.log(results);
+		// console.log(results);
 		expect(results).toBeDefined();
 	});
 });

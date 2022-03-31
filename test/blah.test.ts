@@ -63,12 +63,6 @@ describe('patient modelling stuff', () => {
 	});
 
 	it('getBetaListMatch works for empty arrays', () => {
-		// console.log(
-		// 	getBetaListMatch('or')([
-		// 		createBeta('one', 110, 10),
-		// 		createBeta('two', 10, 100),
-		// 	])([])
-		// );
 		const emptyAndResult = getBetaListMatch(false)('and')([])([]);
 		expect(emptyAndResult).toEqual(1);
 	});

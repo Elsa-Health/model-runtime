@@ -2,6 +2,7 @@ import {
 	convertAgeToGroup,
 	friendlySymptomName,
 	isWeibullList,
+	mean,
 	randomSymptom,
 	toggleCondition,
 } from '../src/utils';
@@ -55,5 +56,14 @@ describe('Utility functions are working fine', () => {
 
 		expect(isWeibullList(wList)).toBe(true);
 		expect(isWeibullList(nList)).toBe(false);
+	});
+
+	it('Calculates the mean without breaking', () => {
+		fc.assert(
+			fc.property(
+				fc.float64Array(),
+				list => typeof mean((list as unknown) as number[]) === 'number'
+			)
+		);
 	});
 });
