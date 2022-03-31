@@ -13,9 +13,9 @@ describe('Creation of Random Variables works', () => {
 				fc.float({ next: false, min: 0.01 }),
 				(a, b) => {
 					const rv = createNormal('testNormal', a, b);
-					rv._.dist === 'normal';
-					rv.mean = a;
-					rv.sd = b;
+					return (
+						rv._.dist === 'normal' && rv.mean === a && rv.sd === b
+					);
 				}
 			)
 		);
@@ -29,10 +29,12 @@ describe('Creation of Random Variables works', () => {
 				fc.float({ next: false, min: 0.01 }),
 				(a, b, c) => {
 					const rv = createWeibull('testWeibull', a, b, c);
-					rv._.dist === 'weibull';
-					rv.threshold === a;
-					rv.shape === b;
-					rv.scale === c;
+					return (
+						rv._.dist === 'weibull' &&
+						rv.threshold === a &&
+						rv.shape === b &&
+						rv.scale === c
+					);
 				}
 			)
 		);
@@ -40,13 +42,19 @@ describe('Creation of Random Variables works', () => {
 
 	it('Creates a cauchy variable', () => {
 		fc.assert(
-			fc.property(fc.float(), fc.float(), (a, b) => {
-				const rv = createCauchy('testCauchy', a, b);
+			fc.property(
+				fc.float(),
+				fc.float({ next: false, min: 0.01 }),
+				(a, b) => {
+					const rv = createCauchy('testCauchy', a, b);
 
-				rv._.dist === 'cauchy';
-				rv.scale === b;
-				rv.location === a;
-			})
+					return (
+						rv._.dist === 'cauchy' &&
+						rv.scale === b &&
+						rv.location === a
+					);
+				}
+			)
 		);
 	});
 });
