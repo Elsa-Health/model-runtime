@@ -4,6 +4,7 @@ import {
 	isWeibullList,
 	mean,
 	randomSymptom,
+	symptomScore,
 	toggleCondition,
 } from '../src/utils';
 import fc from 'fast-check';
@@ -17,6 +18,10 @@ describe('Utility functions are working fine', () => {
 				(age: number) => typeof convertAgeToGroup(age) === 'string'
 			)
 		);
+
+		// @ts-ignore
+		expect(convertAgeToGroup(undefined)).toEqual('n/a');
+		expect(convertAgeToGroup(-1)).toEqual('n/a');
 	});
 
 	it('Can generate a random symptom given only a name', () => {
@@ -64,6 +69,41 @@ describe('Utility functions are working fine', () => {
 				fc.float64Array(),
 				list => typeof mean((list as unknown) as number[]) === 'number'
 			)
+		);
+	});
+
+	it('Can score a symptom based on the LDONPAR features of the symptom', () => {
+		const def = {
+			sexMatch: 1,
+			ageMatch: 1,
+			locationMatch: 1,
+			durationMatch: 1,
+			onsetMatch: 1,
+			natureMatch: 1,
+			periodicityMatch: 1,
+			aggravatorsMatch: 1,
+			relieversMatch: 1,
+			timeToOnsetMatch: 1,
+		};
+		const score1 = symptomScore({ ...def });
+		const score2 = symptomScore({
+			...def,
+			natureMatch: 0.3,
+			periodicityMatch: 0.4,
+		});
+		const score3 = symptomScore({
+			...def,
+			natureMatch: 0.4,
+			periodicityMatch: 0.3,
+		});
+		// const score4 = symptomScore({ ...def, periodicityMatch: 0.9 });
+		// const score4 = symptomScore({ ...def, natureMatch: 0.9 });
+
+		expect(score1).toBeGreaterThan(score2);
+		expect(score3).toBeGreaterThan(score2);
+
+		expect(symptomScore({ ...def, periodicityMatch: 0.5 })).toEqual(
+			symptomScore({ ...def, onsetMatch: 0.5 })
 		);
 	});
 });

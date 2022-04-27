@@ -232,7 +232,7 @@ describe('Patient Symptom Assessment', () => {
 		// @ts-ignore
 		const result = interpret(false)(testModel)(formattedPatient);
 
-		console.log(result);
+		// console.log(result);
 		expect(result).toBeDefined();
 	});
 

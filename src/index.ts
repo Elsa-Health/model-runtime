@@ -95,7 +95,7 @@ type InterpretFunction = (
 	stochastic: boolean
 ) => (model: T.ConditionModel) => (patient: T.FormattedPatient) => PatientMatch;
 
-// TODO: Add support for symptoms that are not expected to be presenting yet based on symptom presentation
+// TODO: Add support for symptoms that are not expected to be presenting "yet" based on symptom presentation
 export const interpret: InterpretFunction = (
 	stochastic = false
 ) => model => patient => {
@@ -103,122 +103,124 @@ export const interpret: InterpretFunction = (
 		patient.age || 18
 	) as T.AgeGroup;
 	// Compare all the symptoms that the patient and the model have
-	const assesment = patient.symptoms?.map(psymptom => {
-		const modelSymptoms = model.symptoms.find(
-			msymptom => msymptom.name === psymptom.name
-		);
+	const assesment: T.SymptomMatch[] =
+		patient.symptoms?.map(psymptom => {
+			const modelSymptoms = model.symptoms.find(
+				msymptom => msymptom.name === psymptom.name
+			);
 
-		// Could not find the symptom in th emodel
-		if (modelSymptoms === undefined) {
-			// TODO: handle patient has extra symptoms (penalize?)
-			// console.log("")
+			// Could not find the symptom in th emodel
+			if (modelSymptoms === undefined) {
+				// TODO: handle patient has extra symptoms (penalize?)
+				// console.log("")
+				return {
+					sexMatch: 0,
+					ageMatch: 0,
+					locationMatch: 0,
+					aggravatorsMatch: 0,
+					relieversMatch: 0,
+					durationMatch: 0,
+					natureMatch: 0,
+					onsetMatch: 0,
+					periodicityMatch: 0,
+					timeToOnsetMatch: 0,
+				};
+			}
+
+			const getP = stochastic ? getRandomBetaP : getBetaP;
+			const ageMatch = (() => {
+				const group = modelSymptoms.age[patientAgeGroup];
+
+				// console.log({ group, patientAgeGroup, age: patient.age });
+				return getP(group.alpha, group.beta, true);
+			})();
+			const sexMatch = (() => {
+				const pSex = modelSymptoms.sex[patient.sex];
+
+				return getP(pSex.alpha, pSex.beta, true);
+			})();
+
+			const locationMatch = getBetaListMatch(stochastic)('or')(
+				modelSymptoms.locations
+			)(psymptom.locations);
+
+			const durationMatch = ((tolerance: number) => {
+				const { mean, sd } = modelSymptoms.duration;
+				const x = psymptom.duration;
+				const cDist = new normalDist.Normal(mean, sd);
+				if (x <= mean) {
+					return cDist.cdf(x, mean, sd) * 2 * tolerance;
+				} else {
+					return 1 - cDist.cdf(x, mean, sd) * 2 * tolerance;
+				}
+			})(0.75);
+
+			const onsetMatch = getCategoricalMatch(stochastic)(
+				modelSymptoms.onset
+			)(psymptom.onset);
+
+			const natureMatch = (() => {
+				if (isEmpty(modelSymptoms.nature) && isEmpty(psymptom.nature)) {
+					// Match made in heaven!
+					return 1;
+				}
+
+				if (
+					isBetaList(modelSymptoms.nature) ||
+					(isEmpty(modelSymptoms.nature) && !isEmpty(psymptom.nature))
+				) {
+					// Simple list of betas
+					// Should this be an "and" by default??
+					return getBetaListMatch(stochastic)('or')(
+						modelSymptoms.nature as T.Beta[]
+					)(psymptom.nature, 0.5);
+				}
+
+				throw new Error("Can't handle non beta variables for now");
+			})();
+
+			const periodicityMatch = getCategoricalMatch(stochastic)(
+				modelSymptoms.periodicity
+			)(psymptom.periodicity);
+
+			const aggravatorsMatch = getBetaListMatch(stochastic)('or')(
+				modelSymptoms.aggravators
+			)(psymptom.aggravators);
+			const relieversMatch = getBetaListMatch(stochastic)('or')(
+				modelSymptoms.relievers
+			)(psymptom.relievers);
+
+			const timeToOnsetMatch = ((tolerance: number) => {
+				// We are treating the timeToOnset as a "folded" cauchy about the location. The tolerance helps scale things. MAJOR MAJOR MAJOR HACK!! MUST REVIEW!!
+				const { location, scale } = modelSymptoms.timeToOnset;
+				const cDist = new Cauchy(location, scale);
+				const x = psymptom.timeToOnset;
+				if (x <= location) {
+					return cDist.cdf(x, location, scale) * 2 * tolerance;
+				} else {
+					return 1 - cDist.cdf(x, location, scale) * 2 * tolerance;
+				}
+			})(0.75);
+
 			return {
-				locationMatch: 0,
-				aggravatorsMatch: 0,
-				relieversMatch: 0,
-				durationMatch: 0,
-				natureMatch: 0,
-				onsetMatch: 0,
-				periodicityMatch: 0,
-				timeToOnsetMatch: 0,
+				sexMatch,
+				ageMatch: ageMatch * sexMatch,
+				locationMatch: locationMatch * sexMatch,
+				durationMatch: durationMatch * sexMatch,
+				onsetMatch: onsetMatch * sexMatch,
+				natureMatch: natureMatch * sexMatch,
+				periodicityMatch: periodicityMatch * sexMatch,
+				aggravatorsMatch: aggravatorsMatch * sexMatch,
+				relieversMatch: relieversMatch * sexMatch,
+				timeToOnsetMatch: timeToOnsetMatch * sexMatch,
 			};
-		}
+		}) || [];
 
-		const getP = stochastic ? getRandomBetaP : getBetaP;
-		const ageMatch = (() => {
-			const group = modelSymptoms.age[patientAgeGroup];
+	const assessmentScores = assesment
+		.filter(r => r !== undefined)
+		.map(res => utils.symptomScore(res));
 
-			// console.log({ group, patientAgeGroup, age: patient.age });
-			return getP(group.alpha, group.beta, true);
-		})();
-		const sexMatch = (() => {
-			const pSex = modelSymptoms.sex[patient.sex];
-
-			return getP(pSex.alpha, pSex.beta, true);
-		})();
-
-		const locationMatch = getBetaListMatch(stochastic)('or')(
-			modelSymptoms.locations
-		)(psymptom.locations);
-
-		const durationMatch = ((tolerance: number) => {
-			const { mean, sd } = modelSymptoms.duration;
-			const x = psymptom.duration;
-			const cDist = new normalDist.Normal(mean, sd);
-			if (x <= mean) {
-				return cDist.cdf(x, mean, sd) * 2 * tolerance;
-			} else {
-				return 1 - cDist.cdf(x, mean, sd) * 2 * tolerance;
-			}
-		})(0.75);
-
-		const onsetMatch = getCategoricalMatch(stochastic)(modelSymptoms.onset)(
-			psymptom.onset
-		);
-
-		const natureMatch = (() => {
-			if (isEmpty(modelSymptoms.nature) && isEmpty(psymptom.nature)) {
-				// Match made in heaven!
-				return 1;
-			}
-
-			if (
-				isBetaList(modelSymptoms.nature) ||
-				(isEmpty(modelSymptoms.nature) && !isEmpty(psymptom.nature))
-			) {
-				// Simple list of betas
-				// Should this be an "and" by default??
-				return getBetaListMatch(stochastic)('or')(
-					modelSymptoms.nature as T.Beta[]
-				)(psymptom.nature);
-			}
-
-			throw new Error("Can't handle non beta variables for now");
-		})();
-
-		const periodicityMatch = getCategoricalMatch(stochastic)(
-			modelSymptoms.periodicity
-		)(psymptom.periodicity);
-
-		const aggravatorsMatch = getBetaListMatch(stochastic)('or')(
-			modelSymptoms.aggravators
-		)(psymptom.aggravators);
-		const relieversMatch = getBetaListMatch(stochastic)('or')(
-			modelSymptoms.relievers
-		)(psymptom.relievers);
-
-		const timeToOnsetMatch = ((tolerance: number) => {
-			// We are treating the timeToOnset as a "folded" cauchy about the location. The tolerance helps scale things. MAJOR MAJOR MAJOR HACK!! MUST REVIEW!!
-			const { location, scale } = modelSymptoms.timeToOnset;
-			const cDist = new Cauchy(location, scale);
-			const x = psymptom.timeToOnset;
-			if (x <= location) {
-				return cDist.cdf(x, location, scale) * 2 * tolerance;
-			} else {
-				return 1 - cDist.cdf(x, location, scale) * 2 * tolerance;
-			}
-		})(0.75);
-
-		return {
-			sexMatch,
-			ageMatch: ageMatch * sexMatch,
-			locationMatch: locationMatch * sexMatch,
-			durationMatch: durationMatch * sexMatch,
-			onsetMatch: onsetMatch * sexMatch,
-			natureMatch: natureMatch * sexMatch,
-			periodicityMatch: periodicityMatch * sexMatch,
-			aggravatorsMatch: aggravatorsMatch * sexMatch,
-			relieversMatch: relieversMatch * sexMatch,
-			timeToOnsetMatch: timeToOnsetMatch * sexMatch,
-		};
-	});
-
-	const assessmentResults = mean(
-		assesment
-			.filter(r => r !== undefined)
-			.map(res => mean(Object.values(res) as number[])) as number[]
-	);
-	return assessmentResults;
+	return mean(assessmentScores);
 };
 
 export const sample = (count: number) => (fn: Function): T.Normal => {

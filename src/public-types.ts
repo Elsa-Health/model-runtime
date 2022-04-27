@@ -105,6 +105,19 @@ export type Symptom = {
 	timeToOnset: Cauchy;
 };
 
+export type SymptomMatch = {
+	sexMatch: number;
+	ageMatch: number;
+	locationMatch: number;
+	durationMatch: number;
+	onsetMatch: number;
+	natureMatch: number;
+	periodicityMatch: number;
+	aggravatorsMatch: number;
+	relieversMatch: number;
+	timeToOnsetMatch: number;
+};
+
 export type ConditionModel = {
 	symptoms: Symptom[];
 };

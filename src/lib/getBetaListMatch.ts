@@ -7,32 +7,44 @@ const betaRV = require('@stdlib/random/base/beta');
 // TODO: Figure out the penalty variables
 export const getBetaListMatch = (stochastic: boolean) => (
 	rule: T.BetaCombinationRule = 'and'
-) => (modelSymptoms: T.Beta[]) => (patientSymptoms: string[]) => {
+) => (betaList: T.Beta[]) => (valuesList: string[], tolerance = 0.8) => {
 	// P(A and B) = P(A) x P(B | A) is probably a better approach here because the events are not independent
 
 	const getP = stochastic ? getRandomBetaP : getBetaP;
 
 	// If there are no patient symptoms and the model is also empty, then p = 1
-	if (isEmpty(modelSymptoms) && isEmpty(patientSymptoms)) {
+	if (isEmpty(betaList) && isEmpty(valuesList)) {
 		return 1;
 	}
 
 	// HACK: If the patient has symptoms but the model defines none, then just return 1% likelihood(???)
-	if (isEmpty(modelSymptoms) && !isEmpty(patientSymptoms)) {
+	if (isEmpty(betaList) && !isEmpty(valuesList)) {
 		return 0.01;
 	}
+	// FIXME: Support isPresentButNotExpected symptm as well
+	const penalty = ((tol: number) => {
+		const expected = betaList.map(b => b.name);
+		const unexpected = valuesList.filter(v => !expected.includes(v));
+
+		return Math.pow(tol, unexpected.length);
+	})(tolerance);
+
+	// console.log({ penalty, tolerance });
 
 	if (rule === 'and') {
-		return modelSymptoms.reduce((acc, curr) => {
-			const isPresent = isSymptomPresent(patientSymptoms, curr);
-			const p = getP(curr.alpha, curr.beta, isPresent);
-			return acc * p;
-			// return acc + p; // take mean later??
-		}, 1);
+		return (
+			betaList.reduce((acc, curr) => {
+				const isPresent = isSymptomPresent(valuesList, curr);
+				const p = getP(curr.alpha, curr.beta, isPresent);
+				return acc * p;
+				// return acc + p; // take mean later??
+			}, 1) * penalty
+		);
 	} else {
-		const red = modelSymptoms.reduce(
+		const red = betaList.reduce(
 			(acc, curr) => {
-				const isPresent = isSymptomPresent(patientSymptoms, curr);
+				// Is expected symptom present?
+				const isPresent = isSymptomPresent(valuesList, curr);
 				const p = getP(curr.alpha, curr.beta, isPresent);
 				return {
 					sum: acc.sum + p,
@@ -42,9 +54,14 @@ export const getBetaListMatch = (stochastic: boolean) => (
 			{ sum: 0, prod: 1 }
 		);
 
-		if (modelSymptoms.length === 1) return red.sum;
+		if (betaList.length === 1) return red.sum * penalty;
 
-		return red.sum - red.prod;
+		// console.log({
+		// 	pre: red.sum - red.prod,
+		// 	post: (red.sum - red.prod) * penalty,
+		// });
+
+		return (red.sum - red.prod) * penalty;
 	}
 };
 
@@ -67,15 +84,23 @@ export function getRandomBetaP(
 	return isPresent ? rand() : 1 - rand();
 }
 
+/**
+ * Checks whether a beta value is present in a given list of names
+ *
+ * @export
+ * @param {string[]} valuesList
+ * @param {T.Beta} betaVar
+ * @return {*}  {boolean}
+ */
 export function isSymptomPresent(
-	patientSymptoms: string[],
-	symptom: T.Beta
+	valuesList: string[],
+	betaVar: T.Beta
 ): boolean {
-	if (symptom._.combination === true && Array.isArray(symptom.name)) {
-		return (symptom.name as string[])
-			?.map(n => patientSymptoms.includes(n))
+	if (betaVar._.combination === true && Array.isArray(betaVar.name)) {
+		return (betaVar.name as string[])
+			?.map(n => valuesList.includes(n))
 			.every(v => v);
 	} else {
-		return patientSymptoms.includes(symptom.name as string);
+		return valuesList.includes(betaVar.name as string);
 	}
 }

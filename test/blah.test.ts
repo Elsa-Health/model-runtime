@@ -1,4 +1,5 @@
-import { createPatient, formatPatient, interpret } from '../src';
+import { combineBetas, createPatient, formatPatient, interpret } from '../src';
+import { createBeta } from '../src/lib/distributions';
 import { getBetaListMatch } from '../src/lib/getBetaListMatch';
 import { randomSymptom } from '../src/utils';
 // import { createBeta } from '../src/lib/distributions';
@@ -55,15 +56,32 @@ const pt = patient;
 pt.symptoms[0].nature = [];
 
 describe('patient modelling stuff', () => {
-	it('works', () => {
+	it('[SMOKE] works', () => {
 		const result = interpret(false)(model)(formatPatient(pt));
 
-		console.log(result);
+		// console.log(result);
 		expect(result).toBeDefined();
 	});
 
-	it('getBetaListMatch works for empty arrays', () => {
+	it('[SMOKE] getBetaListMatch works for empty arrays', () => {
 		const emptyAndResult = getBetaListMatch(false)('and')([])([]);
 		expect(emptyAndResult).toEqual(1);
+	});
+
+	it('[SMOKE] getBetaListMatch works for non empty arrays', () => {
+		const result = getBetaListMatch(false)('and')([
+			createBeta('a', 100, 1),
+			createBeta('b', 100, 1),
+		])([]);
+		expect(result).toBeDefined();
+	});
+
+	it('[SMOKE] Does not explode when combining betas', () => {
+		expect(
+			combineBetas('combined', [
+				createBeta('a', 100, 1),
+				createBeta('b', 100, 1),
+			])
+		).toBeDefined();
 	});
 });

@@ -117,3 +117,43 @@ export const convertAgeToGroup = (age: number): string => {
 	}
 	return group[0];
 };
+
+export const weightedMean = (arrValues: number[], arrWeights: number[]) => {
+	const result = arrValues
+		.map((value, i) => {
+			const weight = arrWeights[i];
+			const sum = value * weight;
+			return [sum, weight];
+		})
+		.reduce((p, c) => [p[0] + c[0], p[1] + c[1]], [0, 0]);
+
+	return result[0] / result[1];
+};
+
+const symptomPropsWeight: T.SymptomMatch = {
+	sexMatch: 1,
+	ageMatch: 1,
+	locationMatch: 1,
+	durationMatch: 1,
+	onsetMatch: 1,
+	natureMatch: 3,
+	periodicityMatch: 1,
+	aggravatorsMatch: 1,
+	relieversMatch: 1,
+	timeToOnsetMatch: 1,
+};
+export function symptomScore(
+	symptomMatch: T.SymptomMatch,
+	weights = symptomPropsWeight
+) {
+	let w: number[] = []; // aligned weights
+	let v: number[] = []; // aligned values
+
+	// @ts-expect-error
+	Object.keys(symptomMatch).forEach((key: keyof T.SymptomMatch) => {
+		w.push(weights[key] as number);
+		v.push(symptomMatch[key] as number);
+	});
+
+	return weightedMean(v, w);
+}
