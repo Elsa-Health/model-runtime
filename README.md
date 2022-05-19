@@ -18,6 +18,8 @@ A simple library to evaulate Elsa Open Health Models for use in any environment.
 
 ```
 yarn add @elsa-health/model-runtime
+
+// or using npm: npm install --save @elsa-health/model-runtime
 ```
 
 ## Usage/Examples
@@ -28,6 +30,19 @@ import {
 	interpret,
 	formatPatient,
 } from '@elsa-health/model-runtime';
+
+// Visit open.elsa.health/explore-models to find and download any model you want to use.
+const diseaseModel = require('path/to/downloaded-model.js');
+/*
+ * {
+ *	name: "my-model"
+ *	condition: "pneumonia"
+ *	ownerId: "....",
+ *	ownerEmail: "...",
+ *	symptoms: [],
+ *	....
+ * }
+ */
 
 const symptoms = [
 	{
@@ -56,9 +71,9 @@ const result = interpret(isStochastic)(diseaseModel)(
 console.log('Here is the result: ', result);
 ```
 
-## Deployment
+## Tech Stack
 
-// TODO
+**Client + Server:** Javascript + Typescript
 
 ## Roadmap
 
@@ -68,9 +83,17 @@ console.log('Here is the result: ', result);
     -   [ ] Support Changing Variables - size, color, elevatedness, etc
 -   [x] Optional Support for uncertainity in the results through sampling of the random variables.
 -   [ ] Support patient assessment results that show exactly what symptom features are not matching or are matching with different degees. (path towards explainability??)
--   [ ] Support weights for each of the symptom features
+-   [x] Support weights for each of the symptom features
 -   [x] Support for age differences in model definitions
 -   [x] Support for sex differences in model definitions
+
+## Contributing
+
+Contributions are always welcome!
+
+Please visit this link for the contribution guidelines: [https://opensource.elsa.health/contribution-guidelines](https://opensource.elsa.health/contribution-guidelines)
+
+Please adhere to this project's `code of conduct`.
 
 ## FAQ
 
